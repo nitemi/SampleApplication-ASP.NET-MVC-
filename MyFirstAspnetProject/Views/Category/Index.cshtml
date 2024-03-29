@@ -1,0 +1,98 @@
+﻿﻿@model List<MyFirstAspnetProject.Models.CategoryModel>
+
+@{
+    ViewBag.Title = "Index";
+    int index = 0;
+}
+
+<h2>Index</h2>
+
+<h4>Welcome to our Category Index page.</h4>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Category List</h4>
+    @Html.ActionLink("Add Category", "AddCategory", null, new { @class = "btn btn-success btn-sm" })
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>
+            S/N
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+
+        <th></th>
+        <th></th>
+    </tr>
+    @foreach (var prod in Model)
+    {
+        <tr>
+            @{
+                index++;
+            }
+            <td>
+                @index
+            </td>
+            <td>
+                @prod.Name
+            </td>
+            <td>
+                @prod.Description
+            </td>
+
+            <td>
+                <a href="/Category/Edit/@prod.Id">Edit</a>
+            </td>
+            <td>
+                @using (Html.BeginForm("Delete", "Category", new { id = prod.Id }, FormMethod.Post, new { id = "deleteForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HttpMethodOverride(HttpVerbs.Delete)
+                    @*@Html.Hidden("Id", prod.Id)*@
+
+                    <input type="submit" value="Delete" onclick="return confirmDelete();" class="btn btn-danger btn-xs" />
+                }
+
+                @*@Html.ActionLink("Delete","Delete", new {id = prod.Id}, new {onclick = "return confirm('Are you sure you really want to delete this product?');"})*@
+            </td>
+        </tr>
+    }
+</table>
+
+
+
+<script>
+	function confirmDelete()
+	{
+		if (confirm('Are you sure you really want to delete this product?'))
+		{
+			//$.ajax({
+			//	type: "POST",
+			//	url: $("#deleteForm").attr("action"),
+			//	data: $("#deleteForm").serialize(),
+			//	success: function (response) {
+
+			//	}
+
+			//	error: function (xhr, status, error) {
+
+			//	}
+
+
+			//});
+
+		}
+		return false;
+	}
+</script>

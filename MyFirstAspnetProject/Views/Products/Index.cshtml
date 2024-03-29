@@ -1,0 +1,122 @@
+﻿@using PagedList
+@using PagedList.Mvc
+
+@model IPagedList<MyFirstAspnetProject.Models.ProductModel>   
+@{
+   
+    int index = 0;
+    var page = ViewBag.Page ?? 1;
+    var pageSize = ViewBag.pageSize ?? Model.Count();
+}
+<h2>Index</h2>
+
+<h4>Welcome to our products page</h4>
+<br />
+<br />
+<br />
+<br />
+<div class="d-flex justify-content-between align-items-center m-3">
+    <h4> Products List</h4>
+    @Html.ActionLink("Add Product", "AddProduct", null, new {@class = "btn btn-success btn-sm"})
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>
+            S/N
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Color
+        </th>
+        <th>
+            Price
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+    @foreach (var prod in Model)
+    {
+        <tr>
+            @{ 
+                index++;
+            }
+            <td>
+                @index
+            </td>
+            <td>
+                <a href="/Products/ProductDetails/@prod.Id">@prod.Name</a>
+            </td>
+            <td>
+                @prod.Name
+            </td>
+            <td>
+                @prod.Description
+            </td>
+            <td>
+                @prod.Quantity
+            </td>
+            <td>
+                @prod.Color
+            </td>
+            <td>
+               &#x20A6; @prod.UnitPrice.ToString("N")
+            </td>
+            <td>
+                <a href="/Products/Edit/@prod.Id">Edit</a>
+            </td>
+            <td>
+                @using (Html.BeginForm("Delete", "Products", new {id = prod.Id}, FormMethod.Post, new {id = "deleteForm"}))
+                {
+                    @Html.AntiForgeryToken()
+                    @*@Html.Hidden("Id", prod.Id)*@
+                    <input type="submit" value="Delete" onclick="return confirmDelete();" class="btn btn-danger btn-4" />
+                }
+                @*@Html.ActionLink("Delete","Delete", new {id = prod.Id}, 
+               new {onclick = "return confirm('Are you sure you want to delete this product?');"})*@
+            </td>
+        </tr>
+    }
+
+    </table>
+<div>
+@Html.PagedListPager(Model, p => Url.Action("Index", new {p}), new PagedListRenderOptions {LiElementClasses = new List<string>{"pagerli"},
+    DisplayPageCountAndCurrentLocation = true, DisplayItemSliceAndTotal = true})
+</div>
+
+
+
+
+<script>
+    function confirmDelete()
+    {
+        if (confirm("Are you sure you want to delete this product?"))
+        {
+           $.ajax({
+                type: "POST",
+                url: $("#deleteForm").attr("action"),
+                data: $("#deleteForm").serialize(),
+               success: function (response)
+                
+                {
+                   console.log("SUCCESS: ", data);
+                   window.location.href = data;
+                },
+                error: function (xhr, status, error)
+                {
+
+                }
+
+            });
+        }
+        return false;
+    }
+</script>

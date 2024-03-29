@@ -1,0 +1,244 @@
+﻿@using MyFirstAspnetProject
+@model MyFirstAspnetProject.Models.ProductModel
+
+@{
+    ViewBag.Title = "AddProduct";
+}
+
+<div class="container">
+    <h2>AddProduct</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <!--Image previews for selected images-->
+            <section id="main-carousel" class="splide">
+                <div class="splide_track">
+                    <ul class="splide_list" id="img-main">
+                    </ul>
+                </div>
+            </section>
+            <section id="thumbnail-carousel"
+                     class="splide"
+                     aria-label="The carousel with thumbnails. Selecting a thumbnail will change the eautiful Gallery carousel.">
+                <div class="splide_track">
+                    <ul class="splide_list" id="img-thumb">
+                    </ul>
+                </div>
+            </section>
+
+
+
+            <div class="col-lg-6">
+
+                @using (Html.BeginForm("AddProduct", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text -danger" })
+                        @Html.HiddenFor(model => model.Id)
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.EditorFor(model => model.Name)
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.EditorFor(model => model.Description)
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Color, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.EditorFor(model => model.Color)
+                                @Html.ValidationMessageFor(model => model.Color, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.EditorFor(model => model.Quantity)
+                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.EditorFor(model => model.UnitPrice)
+                                @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                @Html.DropDownListFor(model => model.SelectedCategoryId, Model.Categories, "Select a Category",
+                               new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <!--Add multiple image file input control-->
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Images, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div>
+                                <input type="file" name="Images" multiple id="image-input" />
+                                @Html.ValidationMessageFor(model => model.Images, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <div class=" col-md-offset-2 col=md-10">
+                                    <input type="submit" value="Save" class="btn btn-primary" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+		prepareThumbs();
+	});
+
+
+	function prepareThumbs() {
+		var main = new Splide('#main-carousel', {
+			type: 'fade',
+			rewind: true,
+			pagination: false,
+			arrows: true,
+		});
+
+
+		var thumbnails = new Splide('#thumbnail-carousel', {
+			fixedWidth: 100,
+			fixedHeight: 60,
+			gap: 10,
+			rewind: true,
+			pagination: false,
+			isNavigation: true,
+			breakpoints: {
+				600: {
+					fixedWidth: 60,
+					fixedHeight: 44,
+				},
+			},
+		});
+
+
+		main.sync(thumbnails);
+		main.mount();
+		thumbnails.mount();
+
+	}
+
+
+
+	//prevent the form from being submitted by the browser's default behavior and instead submit it using the submitForm method
+	document.getElementById('productForm').addEventListener('submit', function (e) {
+		e.preventDefault();
+		submitForm();
+	});
+
+
+	// Initialize an array to store the selected images
+	var selectedImages = [];
+
+	function handleImagePreview() {
+	//	var imagePreview = document.getElementById('imagePreview');
+		var imageMain = document.getElementById('img-main');
+		var imageThumb = document.getElementById('img-thumb');
+		var input = document.getElementById('imageInput');
+		var files = input.files;
+
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			if (file.type.match('image.*')) {
+				var reader = new FileReader();
+
+				reader.onload = function (event) {
+					//var image = document.createElement('img');
+					//image.src = event.target.result;
+					//image.className = 'img-thumbnail';
+					//imagePreview.appendChild(image);
+
+
+					var image1 = document.createElement('img');
+					image1.src = event.target.result;
+
+					var image2 = document.createElement('img');
+					image2.src = event.target.result;
+
+
+					var liMain = document.createElement('li');
+					liMain.className = 'splide__slide';
+					var liThumb = document.createElement('li');
+					liThumb.className = 'splide__slide';
+
+
+					liMain.appendChild(image1);
+					liThumb.appendChild(image2);
+
+					imageMain.appendChild(liMain);
+					imageThumb.appendChild(liThumb);
+
+					prepareThumbs();
+					// Add the selected image to the array
+					selectedImages.push(file);
+				};
+
+				reader.readAsDataURL(file);
+			}
+		}
+	}
+
+	// Attach the 'change' event to the file input
+	document.getElementById('imageInput').addEventListener('change', handleImagePreview);
+
+	function submitForm() {
+		var formData = new FormData();
+
+
+
+		// Add other form data
+		var form = document.getElementById('productForm');
+		var formElements = form.elements;
+		for (var i = 0; i < formElements.length; i++) {
+			var element = formElements[i];
+			if (element.name) {
+				if (element.name != 'Images') {
+				formData.append(element.name, element.value);
+				}
+			}
+		}
+
+		// Add all selected images to the form data
+		for (var i = 0; i < selectedImages.length; i++) {
+			formData.append('Images', selectedImages[i]);
+		}
+
+
+		// Submit the form using AJAX or a similar method
+		// The URL and method will depend on your server-side code
+		$.ajax({
+			url: '/Products/AddProduct',
+			method: 'POST',
+			enctype: 'multipart/form-data',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (data) {
+				// Handle successful submission
+				console.log("SUCCESS : ", data);
+			},
+			error: function () {
+				// Handle errors
+			}
+		});
+	}
+</script>
